@@ -32,7 +32,6 @@
     </style>
 
     <body>
-        
         <form method="post">
             <label for="tv">TV</label>
             <input type="checkbox" name="tv">
@@ -138,20 +137,6 @@
 
             <button type="submit">Search</button>
         </form>
-
-        {%for i in range(0, len)%}
-            <div class="card">
-                <p>RoomID: {{rooms[i]["roomid"]}}</p>
-                <p><b>{{rooms[i]["price"]}}$ per night</b></p>
-                <p>{{rooms[i]["rating"]}} stars</p>
-                <p>{{"TV" if rooms[i]["tv"]==true}} {{"Fridge" if rooms[i]["fridge"]==true}} {{"Freezer" if rooms[i]["freezer"]==true}} {{"A/C" if rooms[i]["ac"]==true}}</p>
-                <p>{{rooms[i]["viewopt"]}} view</p>
-                <p>For {{rooms[i]["capacity"]}} people</p>
-                <p>{{rooms[i]["chainname"]}} chain</p>
-                <p>{{rooms[i]["address"]}}</p>
-            </div>
-        {%endfor%}
-
 
         <script src="https://cdn.korzh.com/metroui/v4/js/metro.min.js"></script>
     </body>

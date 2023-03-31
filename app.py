@@ -4,7 +4,30 @@ from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.sql import func, text
 
-from pypika import Query, Table, Field
+from pypika import (
+    AliasedQuery,
+    Case,
+    ClickHouseQuery,
+    EmptyCriterion,
+    Field as F,
+    Index,
+    MSSQLQuery,
+    MySQLQuery,
+    NullValue,
+    OracleQuery,
+    Order,
+    PostgreSQLQuery,
+    Query,
+    QueryException,
+    RedshiftQuery,
+    SQLLiteQuery,
+    Table,
+    Tables,
+    VerticaQuery,
+    functions as fn,
+    SYSTEM_TIME,
+)
+from pypika.terms import ValueWrapper
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -18,8 +41,10 @@ db = SQLAlchemy(app)
 @app.route("/rooms", methods=["GET", "POST"])
 def rooms():
     if request.method == "POST":
-        r = Table('room')
-        query = Query.from_(r).select(r.roomid, r.tv, r.fridge, r.freezer, r.ac, r.isextendible, r.viewopt)
+        r, has, hotel, owns, hotelchain = Table('room'), Table('has'), Table('hotel'), Table('owns'), Table('hotelchain')
+        subquery = Query.from_(has).select(has.hotelid, fn.Count(has.roomid)).groupby(has.hotelid)
+
+        query = Query.from_(r).join(has).on(r.roomid == has.roomid).join(hotel).on(has.hotelid == hotel.hotelid).join(owns).on(hotel.hotelid == owns.hotelid).join(hotelchain).on(owns.chainid == hotelchain.chainid).select(r.roomid, r.tv, r.fridge, r.freezer, r.ac, r.isextendible, r.viewopt, r.capacity, r.price, hotel.rating, hotelchain.chainname, hotel.address).join(subquery).on(subquery.hotelid == has.hotelid)
 
         tv = request.form.get('tv')
         if tv=="on":
@@ -50,13 +75,61 @@ def rooms():
             query = query.where(r.viewopt=='River')
         elif view=="forest":
             query = query.where(r.viewopt=='Forest')
+        
+
+        capa = request.form.get('capacity')
+        if capa!=None:
+            cap = capa.split(', ')
+            cap = [int(i) for i in cap]
+            query = query.where(r.capacity >= cap[0])
+            query = query.where(r.capacity <= cap[1])
+
+        
+        pri = request.form.get('price')
+        if pri!=None:
+            price = pri.split(', ')
+            price = [int(i) for i in price]
+            query = query.where(r.price >= price[0])
+            query = query.where(r.price <= price[1])
+        
+        cnt = request.form.get('roomcount')
+        if cnt!=None:
+            count = cnt.split(', ')
+            count = [int(i) for i in count]
+            query = query.where(subquery.count >= count[0])
+            query = query.where(subquery.count <= count[1])
+        
+        rating = request.form.get('category')
+        if rating!="any":
+            query = query.where(hotel.rating == int(rating))
+        
+        chain = request.form.get('hotelchain')
+        if chain!="any":
+            query = query.where(hotelchain.chainname == str(chain))
+        
+        address = request.form.get('area')
+        if address!="any":
+            query = query.where(hotel.address == str(address))
 
         rooms = db.session.execute(text(str(query))).mappings().all()
 
-        return render_template("index.html", rooms=rooms, len=len(rooms))
+        hotelchains = db.session.execute(text('select * from hotelchain')).mappings().all()
+        hotels = db.session.execute(text('select * from hotel')).mappings().all()
 
+        return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+    hotelchains = db.session.execute(text('select * from hotelchain')).mappings().all()
+    hotels = db.session.execute(text('select * from hotel')).mappings().all()
     rooms = db.session.execute(text('select * from room')).mappings().all()
-    return render_template("index.html", rooms=rooms, len=len(rooms))
+    return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+
+@app.route("/admin", methods=["GET", "POST"])
+def admin():
+    if request.method == "POST":
+        
+        return render_template("admin.html")
+    return render_template("admin.html")
 
 
 if __name__ == "__main__":
