@@ -292,6 +292,178 @@ def addroom():
     return render_template("addroom.html")
 
 
+@app.route("/budget", methods=["GET", "POST"])
+def budget():
+    if request.method == "POST":
+        r, has, hotel, owns, hotelchain = Table('budget'), Table('has'), Table('hotel'), Table('owns'), Table('hotelchain')
+        subquery = Query.from_(has).select(has.hotelid, fn.Count(has.roomid)).groupby(has.hotelid)
+
+        query = Query.from_(r).join(has).on(r.roomid == has.roomid).join(hotel).on(has.hotelid == hotel.hotelid).join(owns).on(hotel.hotelid == owns.hotelid).join(hotelchain).on(owns.chainid == hotelchain.chainid).select(r.roomid, r.tv, r.fridge, r.freezer, r.ac, r.isextendible, r.viewopt, r.capacity, r.price, hotel.rating, hotelchain.chainname, hotel.address).join(subquery).on(subquery.hotelid == has.hotelid)
+
+        tv = request.form.get('tv')
+        if tv=="on":
+            query = query.where(r.tv==True)
+
+        fridge = request.form.get('fridge')
+        if fridge=="on":
+            query = query.where(r.fridge==True)
+        
+        freezer = request.form.get('freezer')
+        if freezer=="on":
+            query = query.where(r.freezer==True)
+        
+        ac = request.form.get('ac')
+        if ac=="on":
+            query = query.where(r.ac==True)
+
+        isextendible = request.form.get('isextendible')
+        if isextendible=="on":
+            query = query.where(r.isextendible==True)
+        
+        view = request.form.get('view')
+        if view=="mountain":
+            query = query.where(r.viewopt=='Mountain')
+        elif view=="sea":
+            query = query.where(r.viewopt=='Sea')
+        elif view=="river":
+            query = query.where(r.viewopt=='River')
+        elif view=="forest":
+            query = query.where(r.viewopt=='Forest')
+        
+
+        capa = request.form.get('capacity')
+        if capa!=None:
+            cap = capa.split(', ')
+            cap = [int(i) for i in cap]
+            query = query.where(r.capacity >= cap[0])
+            query = query.where(r.capacity <= cap[1])
+
+        
+        pri = request.form.get('price')
+        if pri!=None:
+            price = pri.split(', ')
+            price = [int(i) for i in price]
+            query = query.where(r.price >= price[0])
+            query = query.where(r.price <= price[1])
+        
+        cnt = request.form.get('roomcount')
+        if cnt!=None:
+            count = cnt.split(', ')
+            count = [int(i) for i in count]
+            query = query.where(subquery.count >= count[0])
+            query = query.where(subquery.count <= count[1])
+        
+        rating = request.form.get('category')
+        if rating!="any":
+            query = query.where(hotel.rating == int(rating))
+        
+        chain = request.form.get('hotelchain')
+        if chain!="any":
+            query = query.where(hotelchain.chainname == str(chain))
+        
+        address = request.form.get('area')
+        if address!="any":
+            query = query.where(hotel.address == str(address))
+
+        rooms = db.session.execute(text(str(query))).mappings().all()
+
+        hotelchains = db.session.execute(text('select * from hotelchain')).mappings().all()
+        hotels = db.session.execute(text('select * from hotel')).mappings().all()
+
+        return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+    hotelchains = db.session.execute(text('select * from hotelchain')).mappings().all()
+    hotels = db.session.execute(text('select * from hotel')).mappings().all()
+    rooms = db.session.execute(text('select * from budget')).mappings().all()
+    return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+
+@app.route("/luxury", methods=["GET", "POST"])
+def luxury():
+    if request.method == "POST":
+        r, has, hotel, owns, hotelchain = Table('luxury'), Table('has'), Table('hotel'), Table('owns'), Table('hotelchain')
+        subquery = Query.from_(has).select(has.hotelid, fn.Count(has.roomid)).groupby(has.hotelid)
+
+        query = Query.from_(r).join(has).on(r.roomid == has.roomid).join(hotel).on(has.hotelid == hotel.hotelid).join(owns).on(hotel.hotelid == owns.hotelid).join(hotelchain).on(owns.chainid == hotelchain.chainid).select(r.roomid, r.tv, r.fridge, r.freezer, r.ac, r.isextendible, r.viewopt, r.capacity, r.price, hotel.rating, hotelchain.chainname, hotel.address).join(subquery).on(subquery.hotelid == has.hotelid)
+
+        tv = request.form.get('tv')
+        if tv=="on":
+            query = query.where(r.tv==True)
+
+        fridge = request.form.get('fridge')
+        if fridge=="on":
+            query = query.where(r.fridge==True)
+        
+        freezer = request.form.get('freezer')
+        if freezer=="on":
+            query = query.where(r.freezer==True)
+        
+        ac = request.form.get('ac')
+        if ac=="on":
+            query = query.where(r.ac==True)
+
+        isextendible = request.form.get('isextendible')
+        if isextendible=="on":
+            query = query.where(r.isextendible==True)
+        
+        view = request.form.get('view')
+        if view=="mountain":
+            query = query.where(r.viewopt=='Mountain')
+        elif view=="sea":
+            query = query.where(r.viewopt=='Sea')
+        elif view=="river":
+            query = query.where(r.viewopt=='River')
+        elif view=="forest":
+            query = query.where(r.viewopt=='Forest')
+        
+
+        capa = request.form.get('capacity')
+        if capa!=None:
+            cap = capa.split(', ')
+            cap = [int(i) for i in cap]
+            query = query.where(r.capacity >= cap[0])
+            query = query.where(r.capacity <= cap[1])
+
+        
+        pri = request.form.get('price')
+        if pri!=None:
+            price = pri.split(', ')
+            price = [int(i) for i in price]
+            query = query.where(r.price >= price[0])
+            query = query.where(r.price <= price[1])
+        
+        cnt = request.form.get('roomcount')
+        if cnt!=None:
+            count = cnt.split(', ')
+            count = [int(i) for i in count]
+            query = query.where(subquery.count >= count[0])
+            query = query.where(subquery.count <= count[1])
+        
+        rating = request.form.get('category')
+        if rating!="any":
+            query = query.where(hotel.rating == int(rating))
+        
+        chain = request.form.get('hotelchain')
+        if chain!="any":
+            query = query.where(hotelchain.chainname == str(chain))
+        
+        address = request.form.get('area')
+        if address!="any":
+            query = query.where(hotel.address == str(address))
+
+        rooms = db.session.execute(text(str(query))).mappings().all()
+
+        hotelchains = db.session.execute(text('select * from hotelchain')).mappings().all()
+        hotels = db.session.execute(text('select * from hotel')).mappings().all()
+
+        return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+    hotelchains = db.session.execute(text('select * from hotelchain')).mappings().all()
+    hotels = db.session.execute(text('select * from hotel')).mappings().all()
+    rooms = db.session.execute(text('select * from luxury')).mappings().all()
+    return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+
 if __name__ == "__main__":
    app.run(host='0.0.0.0', port=8080)
 
