@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Add</title>
+        <link href='https://fonts.googleapis.com/css?family=Barlow' rel='stylesheet'>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="https://cdn.korzh.com/metroui/v4/css/metro-all.min.css">
+    </head>
+
+    <style>
+        body {
+            font-family: 'Barlow';
+        }
+    </style>
+
+    <body>
+        <form method="post">
+            <label for="id">id:</label><br>
+            <input type="text" name="id"><br>
+
+            <label for="roomid">roomid:</label><br>
+            <select name="roomid">
+                {%for i in range(0, numrooms)%}
+                    <option value="{{rooms[i]['roomid']}}">{{rooms[i]["roomid"]}}</option>
+                {%endfor%}
+            </select>
+
+            <br>
+
+            <label for="hotelid">hotelid:</label><br>
+            <select name="hotelid">
+                {%for i in range(0, numhotels)%}
+                    <option value="{{hotels[i]['hotelid']}}">{{hotels[i]["hotelid"]}}</option>
+                {%endfor%}
+            </select>
+
+            <br>
+
+            <label for="ssn">ssn:</label><br>
+            <select name="ssn">
+                {%for i in range(0, numemployees)%}
+                    <option value="{{employees[i]['ssn']}}">{{employees[i]["ssn"]}}</option>
+                {%endfor%}
+            </select>
+
+            <br>
+
+            <label for="startdate">startdate:</label><br>
+            <input type="text" name="startdate"><br>
+
+            <label for="enddate">enddate:</label><br>
+            <input type="text" name="enddate"><br>
+
+            <label for="numberofguests">number of guests:</label><br>
+            <input type="text" name="numberofguests"><br>
+
+            <button type="submit">Book</button>
+        </form>
+
+        <script src="https://cdn.korzh.com/metroui/v4/js/metro.min.js"></script>
+    </body>
+</html>

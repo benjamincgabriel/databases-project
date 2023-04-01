@@ -292,6 +292,27 @@ def addroom():
     return render_template("addroom.html")
 
 
+@app.route("/addbooking", methods=["GET", "POST"])
+def addbooking():
+    if request.method == "POST":
+        booking = Table('booking')
+
+        query = Query.into(booking).insert(int(request.form.get('id')), int(request.form.get('roomid')), int(request.form.get('hotelid')), int(request.form.get('ssn')), request.form.get('startdate'), request.form.get('enddate'), int(request.form.get('numberofguests')))
+        print(query)
+        db.session.execute(text(str(query)))
+        db.session.commit()
+
+        employees = db.session.execute(text('select * from employee')).mappings().all()
+        hotels = db.session.execute(text('select * from hotel')).mappings().all()
+        rooms = db.session.execute(text('select * from room')).mappings().all()
+        return render_template("addbooking.html", rooms=rooms, numrooms=len(rooms), hotels=hotels, numhotels=len(hotels), employees=employees, numemployees=len(employees))
+
+    employees = db.session.execute(text('select * from employee')).mappings().all()
+    hotels = db.session.execute(text('select * from hotel')).mappings().all()
+    rooms = db.session.execute(text('select * from room')).mappings().all()
+    return render_template("addbooking.html", rooms=rooms, numrooms=len(rooms), hotels=hotels, numhotels=len(hotels), employees=employees, numemployees=len(employees))
+
+
 @app.route("/budget", methods=["GET", "POST"])
 def budget():
     if request.method == "POST":
@@ -462,6 +483,26 @@ def luxury():
     hotels = db.session.execute(text('select * from hotel')).mappings().all()
     rooms = db.session.execute(text('select * from luxury')).mappings().all()
     return render_template("index.html", rooms=rooms, len=len(rooms), hotelchains=hotelchains, numhotelchains=len(hotelchains), hotels=hotels, numhotels=len(hotels))
+
+
+@app.route("/transformbooking", methods=["GET", "POST"])
+def transformbooking():
+    if request.method == "POST":
+        booking_table = Table('booking')
+        booking_query = Query.from_(booking_table).select('*').where(booking_table.bookingid==request.form.get('bookingid'))
+        booking = db.session.execute(text(str(booking_query))).mappings().all()
+        rental = Table('rental')
+
+        query = Query.into(rental).insert(booking[0]["bookingid"], booking[0]["roomid"], booking[0]["hotelid"], request.form.get('ssn'), booking[0]["startdate"], booking[0]["enddate"], booking[0]["numberguests"])
+        print(query)
+        db.session.execute(text(str(query)))
+        db.session.commit()
+
+        bookings = db.session.execute(text('select * from booking')).mappings().all()
+        return render_template("transformbooking.html", bookings=bookings, numbookings=len(bookings))
+
+    bookings = db.session.execute(text('select * from booking')).mappings().all()
+    return render_template("transformbooking.html", bookings=bookings, numbookings=len(bookings))
 
 
 if __name__ == "__main__":
