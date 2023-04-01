@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Delete</title>
+        <link href='https://fonts.googleapis.com/css?family=Barlow' rel='stylesheet'>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="https://cdn.korzh.com/metroui/v4/css/metro-all.min.css">
+    </head>
+
+    <style>
+        body {
+            font-family: 'Barlow';
+        }
+    </style>
+
+    <body>
+        <form method="post">
+            <label for="hoteldelete">Select hotel to delete:</label>
+            <select name="hoteldelete">
+                <option value="none">None</option>
+                {%for i in range(0, numhotels)%}
+                    <option value="{{hotels[i]['hotelname']}}">{{hotels[i]["hotelname"]}}</option>
+                {%endfor%}
+            </select>
+            <button type="submit">Delete</button>
+        </form>
+
+        <script src="https://cdn.korzh.com/metroui/v4/js/metro.min.js"></script>
+    </body>
+</html>

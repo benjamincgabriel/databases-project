@@ -2,7 +2,7 @@
 
 <html lang="en">
     <head>
-        <title>Rooms</title>
+        <title>Admin</title>
         <link href='https://fonts.googleapis.com/css?family=Barlow' rel='stylesheet'>
 
         <meta charset="utf-8">
@@ -14,129 +14,20 @@
         body {
             font-family: 'Barlow';
         }
-        .card {
-            /* Add shadows to create the "card" effect */
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5);
-            transition: 0.3s;
-        }
-
-        /* On mouse-over, add a deeper shadow */
-        .card:hover {
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5);
-        }
-
-        /* Add some padding inside the card container */
-        .container {
-            padding: 2px 16px;
-        }
     </style>
 
     <body>
-        <form method="post">
-            <label for="tv">TV</label>
-            <input type="checkbox" name="tv">
-
-            <label for="fridge">/ Fridge</label>
-            <input type="checkbox" name="fridge">
-
-            <label for="freezer">/ Freezer</label>
-            <input type="checkbox" name="freezer">
-
-            <label for="ac">/ AC</label>
-            <input type="checkbox" name="ac">
-
-            <label for="isextendible">/ Is extendible?</label>
-            <input type="checkbox" name="isextendible">
-
-            <label for="view">/ View:</label>
-            <input type="radio" id="mountain" name="view" value="mountain">
-            <label for="mountain">Mountain</label>
-            <input type="radio" id="sea" name="view" value="sea">
-            <label for="mountain">Sea</label>
-            <input type="radio" id="river" name="view" value="river">
-            <label for="mountain">River</label>
-            <input type="radio" id="forest" name="view" value="forest">
-            <label for="mountain">Forest</label>
-
-            <label for="hotelchain">/ Hotel Chain:</label>
-            <select name="hotelchain">
-                <option value="any">Any</option>
-                {%for i in range(0, numhotelchains)%}
-                    <option value="{{hotelchains[i]['chainname']}}">{{hotelchains[i]["chainname"]}}</option>
-                {%endfor%}
-            </select>
-
-            <label for="area">/ Area:</label>
-            <select name="area">
-                <option value="any">Any</option>
-                {%for i in range(0, numhotels)%}
-                    <option value="{{hotels[i]['address']}}">{{hotels[i]["address"]}}</option>
-                {%endfor%}
-            </select>
-
-            <label for="category">/ Category:</label>
-            <select name="category">
-                <option value="any">Any</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-
-            <br>
-
-            <label for="capacity">Capacity: </label>
-            <input data-role="doubleslider"
-                name="capacity"
-                data-min="1"
-                data-max="10"
-                data-value-min="1"
-                data-value-max="10"
-                data-hint-position-min="top"
-                data-hint-position-max="top"
-                data-show-min-max="true"
-                data-hint-always="true"
-                data-cls-complete="bg-red"
-                class="thin cycle-marker"
-                data-cls-hint="bg-pink fg-white shadow-2">
-            
-            <br>
-
-            <label for="price">Price /night: </label>
-            <input data-role="doubleslider"
-                name="price"
-                data-min="100"
-                data-max="2000"
-                data-value-min="200"
-                data-value-max="350"
-                data-hint-position-min="top"
-                data-hint-position-max="top"
-                data-hint-always="true"
-                data-show-min-max="true"
-                data-cls-complete="bg-red"
-                class="thin cycle-marker"
-                data-cls-hint="bg-pink fg-white shadow-2">
-
-            <br>
-            
-            <label for="roomcount">Number of rooms: </label>
-            <input data-role="doubleslider"
-                name="roomcount"
-                data-min="5"
-                data-max="100"
-                data-value-min="5"
-                data-value-max="10"
-                data-hint-position-min="top"
-                data-hint-position-max="top"
-                data-hint-always="true"
-                data-show-min-max="true"
-                data-cls-complete="bg-red"
-                class="thin cycle-marker"
-                data-cls-hint="bg-pink fg-white shadow-2">
-
-            <button type="submit">Search</button>
-        </form>
+        <h1>Insert</h1>
+        <a href="{{url_for('addcustomer')}}">Add Customer</a><br>
+        <a href="{{url_for('addemployee')}}">Add Employee</a><br>
+        <a href="{{url_for('addhotel')}}">Add Hotel</a><br>
+        <a href="{{url_for('addroom')}}">Add Room</a><br>
+        <h1>Delete</h1>
+        <a href="{{url_for('deletecustomer')}}">Delete Customer</a><br>
+        <a href="{{url_for('deleteemployee')}}">Delete Employee</a><br>
+        <a href="{{url_for('deletehotel')}}">Delete Hotel</a><br>
+        <a href="{{url_for('deleteroom')}}">Delete Room</a><br>
+        <a href="{{url_for('deletehotelchain')}}">Delete Hotel Chain</a>
 
         <script src="https://cdn.korzh.com/metroui/v4/js/metro.min.js"></script>
     </body>
